@@ -1,46 +1,38 @@
 <template>
-    <tr>
-        <td>{{ person.firstName }}</td>
-        <td>{{ person.lastName }}</td>
-        <td>{{ personAge }}</td>
-        <td class="d-flex gap-2">
-            <button type="button" class="btn btn-warning" @click="openEditDialog">Edit</button>
-            <button type="button" class="btn btn-danger" @click="handleDelete">Delete</button>
-        </td>
-    </tr>
-
-    <CustomDialog :title="firstAndLastName" :show="isDialogOpen" @update:show="$event => isDialogOpen = $event">
-        <template #body>
-            <PersonForm :person="person" @upsert="handleEdit" />
-        </template>
-    </CustomDialog>
+  <tr>
+    <td>{{ person.id }}</td>
+    <td>{{ person.firstName }}</td>
+    <td>{{ person.lastName }}</td>
+    <td>{{ personAge }}</td>
+    <td class="d-flex gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        @click="goToDetailView"
+      >
+        Details
+      </button>
+    </td>
+  </tr>
 </template>
 
 <script setup>
-import CustomDialog from './CustomDialog.vue'
-import PersonForm from './PersonForm.vue';
+import { defineProps, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-import { defineEmits } from 'vue'
-import { computed, defineProps, ref } from 'vue'
+const router = useRouter()
 
-const props = defineProps(['person'])
-const emit = defineEmits(['edit', 'delete'])
+const props = defineProps({
+  person: {
+    type: Object,
+    default: null
+  }
+})
+
 const personAge = computed(() => new Date().getFullYear() - props.person.birthYear)
 
-const isDialogOpen = ref(false)
 
-const firstAndLastName = computed(() => `${props.person.firstName} ${props.person.lastName}`)
-
-const openEditDialog = () => {
-    isDialogOpen.value = true
-}
-
-const handleEdit = (editedPerson) => {
-    isDialogOpen.value = false
-    emit('edit', editedPerson)
-}
-
-const handleDelete = () => {
-    emit('delete', props.person)
+const goToDetailView = () => {
+  router.push({ path: `/users/${props.person.id}` })
 }
 </script>
