@@ -3,28 +3,19 @@
     <h1 class="my-5">
       Overview
     </h1>
-    <div class="row">
+    <div
+      v-if="persons"
+      class="row"
+    >
       <div class="col-12">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Firstname</th>
-                <th>Lastname</th>
-                <th>Age</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <PersonEntry
-                v-for="(person, index) in persons"
-                :key="index"
-                :person="person"
-              />
-            </tbody>
-          </table>
-        </div>
+        <PersonTable
+          :persons="adults"
+          title="Adults"
+        />
+        <PersonTable
+          :persons="children"
+          title="Children"
+        />
       </div>
     </div>
   </div>
@@ -33,10 +24,12 @@
 <script setup>
 import { computed } from 'vue';
 import { usePersonsStore } from '@/stores/PersonStore';
-
-import PersonEntry from '@/components/PersonEntry.vue';
+import PersonTable from '../components/PersonTable.vue';
 
 const personStore = usePersonsStore();
 
 const persons = computed(() => personStore.persons);
+
+const adults = computed(() => persons?.value?.filter(person => person.birthYear < new Date().getFullYear() - 18));
+const children = computed(() => persons?.value?.filter(person => person.birthYear >= new Date().getFullYear() - 18));
 </script>
